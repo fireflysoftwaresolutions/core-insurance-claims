@@ -10,6 +10,7 @@
     </parent>
 
     <artifactId>core-insurance-claims-core</artifactId>
+    <name>core-insurance-claims-core</name>
 
     <dependencies>
         <dependency>

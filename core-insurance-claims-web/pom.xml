@@ -10,6 +10,7 @@
     </parent>
 
     <artifactId>core-insurance-claims-web</artifactId>
+    <name>core-insurance-claims-web</name>
 
     <properties>
         <openapi.gen.skip>false</openapi.gen.skip>

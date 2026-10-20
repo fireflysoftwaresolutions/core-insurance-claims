@@ -10,6 +10,7 @@
     </parent>
 
     <artifactId>core-insurance-claims-sdk</artifactId>
+    <name>core-insurance-claims-sdk</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

@@ -1,0 +1,107 @@
+/*
+ * Copyright 2026 Firefly Software Foundation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+
+package com.firefly.core.insurance.claims.core.services.impl;
+
+import org.fireflyframework.core.filters.FilterRequest;
+import org.fireflyframework.core.filters.FilterUtils;
+import org.fireflyframework.core.queries.PaginationResponse;
+import org.fireflyframework.web.error.exceptions.ResourceNotFoundException;
+import com.firefly.core.insurance.claims.core.mappers.ClaimAssessmentMapper;
+import com.firefly.core.insurance.claims.core.services.ClaimAssessmentService;
+import com.firefly.core.insurance.claims.interfaces.dtos.ClaimAssessmentDTO;
+import com.firefly.core.insurance.claims.models.entities.ClaimAssessment;
+import com.firefly.core.insurance.claims.models.repositories.ClaimAssessmentRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import reactor.core.publisher.Mono;
+
+import java.util.UUID;
+
+@Service
+@Transactional
+public class ClaimAssessmentServiceImpl implements ClaimAssessmentService {
+
+    @Autowired
+    private ClaimAssessmentRepository repository;
+
+    @Autowired
+    private ClaimAssessmentMapper mapper;
+
+    @Override
+    public Mono<PaginationResponse<ClaimAssessmentDTO>> filterClaimAssessments(UUID claimId, FilterRequest<ClaimAssessmentDTO> filterRequest) {
+        if (filterRequest.getFilters() == null) {
+            filterRequest.setFilters(new ClaimAssessmentDTO());
+        }
+        filterRequest.getFilters().setClaimId(claimId);
+        return FilterUtils.createFilter(ClaimAssessment.class, mapper::toDTO).filter(filterRequest);
+    }
+
+    @Override
+    public Mono<ClaimAssessmentDTO> createClaimAssessment(UUID claimId, ClaimAssessmentDTO dto) {
+        return Mono.just(dto)
+                .doOnNext(value -> value.setClaimId(claimId))
+                .map(mapper::toEntity)
+                .flatMap(repository::save)
+                .map(mapper::toDTO);
+    }
+
+    @Override
+    public Mono<ClaimAssessmentDTO> updateClaimAssessment(UUID claimId, UUID claimAssessmentId, ClaimAssessmentDTO dto) {
+        return repository.findById(claimAssessmentId)
+                .switchIfEmpty(Mono.error(ResourceNotFoundException.forResource("ClaimAssessment", claimAssessmentId.toString())))
+                .flatMap(existing -> {
+                    if (!claimId.equals(existing.getClaimId())) {
+                        return Mono.error(ResourceNotFoundException.withReason(
+                                "RESOURCE_SCOPE_MISMATCH",
+                                "ClaimAssessment with id '" + claimAssessmentId + "' does not belong to claim '" + claimId + "'"));
+                    }
+                    mapper.updateEntityFromDto(dto, existing);
+                    return repository.save(existing);
+                })
+                .map(mapper::toDTO);
+    }
+
+    @Override
+    public Mono<Void> deleteClaimAssessment(UUID claimId, UUID claimAssessmentId) {
+        return repository.findById(claimAssessmentId)
+                .switchIfEmpty(Mono.error(ResourceNotFoundException.forResource("ClaimAssessment", claimAssessmentId.toString())))
+                .flatMap(existing -> {
+                    if (!claimId.equals(existing.getClaimId())) {
+                        return Mono.error(ResourceNotFoundException.withReason(
+                                "RESOURCE_SCOPE_MISMATCH",
+                                "ClaimAssessment with id '" + claimAssessmentId + "' does not belong to claim '" + claimId + "'"));
+                    }
+                    return repository.deleteById(claimAssessmentId);
+                });
+    }
+
+    @Override
+    public Mono<ClaimAssessmentDTO> getClaimAssessmentById(UUID claimId, UUID claimAssessmentId) {
+        return repository.findById(claimAssessmentId)
+                .switchIfEmpty(Mono.error(ResourceNotFoundException.forResource("ClaimAssessment", claimAssessmentId.toString())))
+                .flatMap(existing -> {
+                    if (!claimId.equals(existing.getClaimId())) {
+                        return Mono.error(ResourceNotFoundException.withReason(
+                                "RESOURCE_SCOPE_MISMATCH",
+                                "ClaimAssessment with id '" + claimAssessmentId + "' does not belong to claim '" + claimId + "'"));
+                    }
+                    return Mono.just(mapper.toDTO(existing));
+                });
+    }
+}

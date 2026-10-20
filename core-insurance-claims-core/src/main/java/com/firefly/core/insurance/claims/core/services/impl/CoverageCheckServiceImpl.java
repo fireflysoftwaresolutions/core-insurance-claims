@@ -1,0 +1,107 @@
+/*
+ * Copyright 2026 Firefly Software Foundation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+
+package com.firefly.core.insurance.claims.core.services.impl;
+
+import org.fireflyframework.core.filters.FilterRequest;
+import org.fireflyframework.core.filters.FilterUtils;
+import org.fireflyframework.core.queries.PaginationResponse;
+import org.fireflyframework.web.error.exceptions.ResourceNotFoundException;
+import com.firefly.core.insurance.claims.core.mappers.CoverageCheckMapper;
+import com.firefly.core.insurance.claims.core.services.CoverageCheckService;
+import com.firefly.core.insurance.claims.interfaces.dtos.CoverageCheckDTO;
+import com.firefly.core.insurance.claims.models.entities.CoverageCheck;
+import com.firefly.core.insurance.claims.models.repositories.CoverageCheckRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import reactor.core.publisher.Mono;
+
+import java.util.UUID;
+
+@Service
+@Transactional
+public class CoverageCheckServiceImpl implements CoverageCheckService {
+
+    @Autowired
+    private CoverageCheckRepository repository;
+
+    @Autowired
+    private CoverageCheckMapper mapper;
+
+    @Override
+    public Mono<PaginationResponse<CoverageCheckDTO>> filterCoverageChecks(UUID claimId, FilterRequest<CoverageCheckDTO> filterRequest) {
+        if (filterRequest.getFilters() == null) {
+            filterRequest.setFilters(new CoverageCheckDTO());
+        }
+        filterRequest.getFilters().setClaimId(claimId);
+        return FilterUtils.createFilter(CoverageCheck.class, mapper::toDTO).filter(filterRequest);
+    }
+
+    @Override
+    public Mono<CoverageCheckDTO> createCoverageCheck(UUID claimId, CoverageCheckDTO dto) {
+        return Mono.just(dto)
+                .doOnNext(value -> value.setClaimId(claimId))
+                .map(mapper::toEntity)
+                .flatMap(repository::save)
+                .map(mapper::toDTO);
+    }
+
+    @Override
+    public Mono<CoverageCheckDTO> updateCoverageCheck(UUID claimId, UUID coverageCheckId, CoverageCheckDTO dto) {
+        return repository.findById(coverageCheckId)
+                .switchIfEmpty(Mono.error(ResourceNotFoundException.forResource("CoverageCheck", coverageCheckId.toString())))
+                .flatMap(existing -> {
+                    if (!claimId.equals(existing.getClaimId())) {
+                        return Mono.error(ResourceNotFoundException.withReason(
+                                "RESOURCE_SCOPE_MISMATCH",
+                                "CoverageCheck with id '" + coverageCheckId + "' does not belong to claim '" + claimId + "'"));
+                    }
+                    mapper.updateEntityFromDto(dto, existing);
+                    return repository.save(existing);
+                })
+                .map(mapper::toDTO);
+    }
+
+    @Override
+    public Mono<Void> deleteCoverageCheck(UUID claimId, UUID coverageCheckId) {
+        return repository.findById(coverageCheckId)
+                .switchIfEmpty(Mono.error(ResourceNotFoundException.forResource("CoverageCheck", coverageCheckId.toString())))
+                .flatMap(existing -> {
+                    if (!claimId.equals(existing.getClaimId())) {
+                        return Mono.error(ResourceNotFoundException.withReason(
+                                "RESOURCE_SCOPE_MISMATCH",
+                                "CoverageCheck with id '" + coverageCheckId + "' does not belong to claim '" + claimId + "'"));
+                    }
+                    return repository.deleteById(coverageCheckId);
+                });
+    }
+
+    @Override
+    public Mono<CoverageCheckDTO> getCoverageCheckById(UUID claimId, UUID coverageCheckId) {
+        return repository.findById(coverageCheckId)
+                .switchIfEmpty(Mono.error(ResourceNotFoundException.forResource("CoverageCheck", coverageCheckId.toString())))
+                .flatMap(existing -> {
+                    if (!claimId.equals(existing.getClaimId())) {
+                        return Mono.error(ResourceNotFoundException.withReason(
+                                "RESOURCE_SCOPE_MISMATCH",
+                                "CoverageCheck with id '" + coverageCheckId + "' does not belong to claim '" + claimId + "'"));
+                    }
+                    return Mono.just(mapper.toDTO(existing));
+                });
+    }
+}

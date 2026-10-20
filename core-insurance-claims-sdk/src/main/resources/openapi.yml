@@ -1,0 +1,4020 @@
+openapi: 3.0.1
+info:
+  title: OpenAPI definition
+  version: v0
+servers:
+- url: http://localhost:18080
+  description: Generated server url
+tags:
+- name: Claim Denials
+  description: Denial recorded by the insurer. This service does not decide coverage.
+- name: Claim Assessments
+  description: Assessment recorded against a claim
+- name: Claim Reserves
+  description: Reserve recorded against a claim
+- name: Coverage Checks
+  description: "Record of the coverage facts checked for a claim: in force, trigger,\
+    \ and deductible"
+- name: Claim Evidence
+  description: Evidence reference on a claim. The document bytes stay in document
+    management.
+- name: Claim Status History
+  description: Status change recorded against a claim
+- name: SIU Referrals
+  description: Referral of a claim to the special investigations unit
+- name: Adjuster Assignments
+  description: Adjuster assigned to a claim. The adjuster is a party.
+- name: Claims
+  description: Claim notification and file
+- name: Claim Triage
+  description: "Routing of a claim to fast-track, complex handling, or SIU"
+- name: Claim Parties
+  description: Party role on a claim. The party itself is owned by customer management.
+- name: Claim Settlements
+  description: "Authorized settlement. Payment execution is a payment order, not this\
+    \ record."
+- name: Claim Coverages
+  description: Coverage on the policy against which the claim is made
+- name: Claim Recoveries
+  description: "Subrogation, salvage, or contribution pursued on a claim"
+- name: Fraud Indicators
+  description: Fraud indicator recorded against a claim. Investigation stays with
+    the insurer.
+paths:
+  /api/v1/claims/{claimId}:
+    get:
+      tags:
+      - Claims
+      summary: Get Claim by id
+      description: Retrieve one Claim
+      operationId: getClaimById
+      parameters:
+      - name: claimId
+        in: path
+        description: Unique identifier of the Claim
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-Idempotency-Key
+        in: header
+        description: "Unique key for idempotent requests. If provided, ensures that\
+          \ identical requests with the same key will only be processed once."
+        required: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Claim found
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ClaimDTO"
+        "404":
+          description: Claim not found
+    put:
+      tags:
+      - Claims
+      summary: Update Claim
+      description: Update an existing Claim
+      operationId: updateClaim
+      parameters:
+      - name: claimId
+        in: path
+        description: Unique identifier of the Claim
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-Idempotency-Key
+        in: header
+        description: "Unique key for idempotent requests. If provided, ensures that\
+          \ identical requests with the same key will only be processed once."
+        required: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ClaimDTO"
+        required: true
+      responses:
+        "200":
+          description: Claim updated
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ClaimDTO"
+        "400":
+          description: Invalid data
+        "404":
+          description: Claim not found
+    delete:
+      tags:
+      - Claims
+      summary: Delete Claim
+      description: Delete a Claim
+      operationId: deleteClaim
+      parameters:
+      - name: claimId
+        in: path
+        description: Unique identifier of the Claim
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-Idempotency-Key
+        in: header
+        description: "Unique key for idempotent requests. If provided, ensures that\
+          \ identical requests with the same key will only be processed once."
+        required: false
+        schema:
+          type: string
+      responses:
+        "204":
+          description: Claim deleted
+        "404":
+          description: Claim not found
+  /api/v1/claims/{claimId}/triage/{claimTriageId}:
+    get:
+      tags:
+      - Claim Triage
+      summary: Get ClaimTriage by id
+      description: Retrieve one ClaimTriage
+      operationId: getClaimTriageById
+      parameters:
+      - name: claimId
+        in: path
+        description: Unique identifier of the Claim
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: claimTriageId
+        in: path
+        description: Unique identifier of the ClaimTriage
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-Idempotency-Key
+        in: header
+        description: "Unique key for idempotent requests. If provided, ensures that\
+          \ identical requests with the same key will only be processed once."
+        required: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: ClaimTriage found
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ClaimTriageDTO"
+        "404":
+          description: ClaimTriage not found
+    put:
+      tags:
+      - Claim Triage
+      summary: Update ClaimTriage
+      description: Update an existing ClaimTriage
+      operationId: updateClaimTriage
+      parameters:
+      - name: claimId
+        in: path
+        description: Unique identifier of the Claim
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: claimTriageId
+        in: path
+        description: Unique identifier of the ClaimTriage
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-Idempotency-Key
+        in: header
+        description: "Unique key for idempotent requests. If provided, ensures that\
+          \ identical requests with the same key will only be processed once."
+        required: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ClaimTriageDTO"
+        required: true
+      responses:
+        "200":
+          description: ClaimTriage updated
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ClaimTriageDTO"
+        "400":
+          description: Invalid data
+        "404":
+          description: ClaimTriage not found
+    delete:
+      tags:
+      - Claim Triage
+      summary: Delete ClaimTriage
+      description: Delete a ClaimTriage
+      operationId: deleteClaimTriage
+      parameters:
+      - name: claimId
+        in: path
+        description: Unique identifier of the Claim
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: claimTriageId
+        in: path
+        description: Unique identifier of the ClaimTriage
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-Idempotency-Key
+        in: header
+        description: "Unique key for idempotent requests. If provided, ensures that\
+          \ identical requests with the same key will only be processed once."
+        required: false
+        schema:
+          type: string
+      responses:
+        "204":
+          description: ClaimTriage deleted
+        "404":
+          description: ClaimTriage not found
+  /api/v1/claims/{claimId}/status-history/{claimStatusHistoryId}:
+    get:
+      tags:
+      - Claim Status History
+      summary: Get ClaimStatusHistory by id
+      description: Retrieve one ClaimStatusHistory
+      operationId: getClaimStatusHistoryById
+      parameters:
+      - name: claimId
+        in: path
+        description: Unique identifier of the Claim
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: claimStatusHistoryId
+        in: path
+        description: Unique identifier of the ClaimStatusHistory
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-Idempotency-Key
+        in: header
+        description: "Unique key for idempotent requests. If provided, ensures that\
+          \ identical requests with the same key will only be processed once."
+        required: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: ClaimStatusHistory found
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ClaimStatusHistoryDTO"
+        "404":
+          description: ClaimStatusHistory not found
+    put:
+      tags:
+      - Claim Status History
+      summary: Update ClaimStatusHistory
+      description: Update an existing ClaimStatusHistory
+      operationId: updateClaimStatusHistory
+      parameters:
+      - name: claimId
+        in: path
+        description: Unique identifier of the Claim
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: claimStatusHistoryId
+        in: path
+        description: Unique identifier of the ClaimStatusHistory
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-Idempotency-Key
+        in: header
+        description: "Unique key for idempotent requests. If provided, ensures that\
+          \ identical requests with the same key will only be processed once."
+        required: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ClaimStatusHistoryDTO"
+        required: true
+      responses:
+        "200":
+          description: ClaimStatusHistory updated
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ClaimStatusHistoryDTO"
+        "400":
+          description: Invalid data
+        "404":
+          description: ClaimStatusHistory not found
+    delete:
+      tags:
+      - Claim Status History
+      summary: Delete ClaimStatusHistory
+      description: Delete a ClaimStatusHistory
+      operationId: deleteClaimStatusHistory
+      parameters:
+      - name: claimId
+        in: path
+        description: Unique identifier of the Claim
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: claimStatusHistoryId
+        in: path
+        description: Unique identifier of the ClaimStatusHistory
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-Idempotency-Key
+        in: header
+        description: "Unique key for idempotent requests. If provided, ensures that\
+          \ identical requests with the same key will only be processed once."
+        required: false
+        schema:
+          type: string
+      responses:
+        "204":
+          description: ClaimStatusHistory deleted
+        "404":
+          description: ClaimStatusHistory not found
+  /api/v1/claims/{claimId}/siu-referrals/{siuReferralId}:
+    get:
+      tags:
+      - SIU Referrals
+      summary: Get SiuReferral by id
+      description: Retrieve one SiuReferral
+      operationId: getSiuReferralById
+      parameters:
+      - name: claimId
+        in: path
+        description: Unique identifier of the Claim
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: siuReferralId
+        in: path
+        description: Unique identifier of the SiuReferral
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-Idempotency-Key
+        in: header
+        description: "Unique key for idempotent requests. If provided, ensures that\
+          \ identical requests with the same key will only be processed once."
+        required: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: SiuReferral found
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/SiuReferralDTO"
+        "404":
+          description: SiuReferral not found
+    put:
+      tags:
+      - SIU Referrals
+      summary: Update SiuReferral
+      description: Update an existing SiuReferral
+      operationId: updateSiuReferral
+      parameters:
+      - name: claimId
+        in: path
+        description: Unique identifier of the Claim
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: siuReferralId
+        in: path
+        description: Unique identifier of the SiuReferral
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-Idempotency-Key
+        in: header
+        description: "Unique key for idempotent requests. If provided, ensures that\
+          \ identical requests with the same key will only be processed once."
+        required: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SiuReferralDTO"
+        required: true
+      responses:
+        "200":
+          description: SiuReferral updated
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/SiuReferralDTO"
+        "400":
+          description: Invalid data
+        "404":
+          description: SiuReferral not found
+    delete:
+      tags:
+      - SIU Referrals
+      summary: Delete SiuReferral
+      description: Delete a SiuReferral
+      operationId: deleteSiuReferral
+      parameters:
+      - name: claimId
+        in: path
+        description: Unique identifier of the Claim
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: siuReferralId
+        in: path
+        description: Unique identifier of the SiuReferral
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-Idempotency-Key
+        in: header
+        description: "Unique key for idempotent requests. If provided, ensures that\
+          \ identical requests with the same key will only be processed once."
+        required: false
+        schema:
+          type: string
+      responses:
+        "204":
+          description: SiuReferral deleted
+        "404":
+          description: SiuReferral not found
+  /api/v1/claims/{claimId}/settlements/{claimSettlementId}:
+    get:
+      tags:
+      - Claim Settlements
+      summary: Get ClaimSettlement by id
+      description: Retrieve one ClaimSettlement
+      operationId: getClaimSettlementById
+      parameters:
+      - name: claimId
+        in: path
+        description: Unique identifier of the Claim
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: claimSettlementId
+        in: path
+        description: Unique identifier of the ClaimSettlement
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-Idempotency-Key
+        in: header
+        description: "Unique key for idempotent requests. If provided, ensures that\
+          \ identical requests with the same key will only be processed once."
+        required: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: ClaimSettlement found
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ClaimSettlementDTO"
+        "404":
+          description: ClaimSettlement not found
+    put:
+      tags:
+      - Claim Settlements
+      summary: Update ClaimSettlement
+      description: Update an existing ClaimSettlement
+      operationId: updateClaimSettlement
+      parameters:
+      - name: claimId
+        in: path
+        description: Unique identifier of the Claim
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: claimSettlementId
+        in: path
+        description: Unique identifier of the ClaimSettlement
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-Idempotency-Key
+        in: header
+        description: "Unique key for idempotent requests. If provided, ensures that\
+          \ identical requests with the same key will only be processed once."
+        required: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ClaimSettlementDTO"
+        required: true
+      responses:
+        "200":
+          description: ClaimSettlement updated
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ClaimSettlementDTO"
+        "400":
+          description: Invalid data
+        "404":
+          description: ClaimSettlement not found
+    delete:
+      tags:
+      - Claim Settlements
+      summary: Delete ClaimSettlement
+      description: Delete a ClaimSettlement
+      operationId: deleteClaimSettlement
+      parameters:
+      - name: claimId
+        in: path
+        description: Unique identifier of the Claim
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: claimSettlementId
+        in: path
+        description: Unique identifier of the ClaimSettlement
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-Idempotency-Key
+        in: header
+        description: "Unique key for idempotent requests. If provided, ensures that\
+          \ identical requests with the same key will only be processed once."
+        required: false
+        schema:
+          type: string
+      responses:
+        "204":
+          description: ClaimSettlement deleted
+        "404":
+          description: ClaimSettlement not found
+  /api/v1/claims/{claimId}/reserves/{claimReserveId}:
+    get:
+      tags:
+      - Claim Reserves
+      summary: Get ClaimReserve by id
+      description: Retrieve one ClaimReserve
+      operationId: getClaimReserveById
+      parameters:
+      - name: claimId
+        in: path
+        description: Unique identifier of the Claim
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: claimReserveId
+        in: path
+        description: Unique identifier of the ClaimReserve
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-Idempotency-Key
+        in: header
+        description: "Unique key for idempotent requests. If provided, ensures that\
+          \ identical requests with the same key will only be processed once."
+        required: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: ClaimReserve found
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ClaimReserveDTO"
+        "404":
+          description: ClaimReserve not found
+    put:
+      tags:
+      - Claim Reserves
+      summary: Update ClaimReserve
+      description: Update an existing ClaimReserve
+      operationId: updateClaimReserve
+      parameters:
+      - name: claimId
+        in: path
+        description: Unique identifier of the Claim
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: claimReserveId
+        in: path
+        description: Unique identifier of the ClaimReserve
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-Idempotency-Key
+        in: header
+        description: "Unique key for idempotent requests. If provided, ensures that\
+          \ identical requests with the same key will only be processed once."
+        required: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ClaimReserveDTO"
+        required: true
+      responses:
+        "200":
+          description: ClaimReserve updated
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ClaimReserveDTO"
+        "400":
+          description: Invalid data
+        "404":
+          description: ClaimReserve not found
+    delete:
+      tags:
+      - Claim Reserves
+      summary: Delete ClaimReserve
+      description: Delete a ClaimReserve
+      operationId: deleteClaimReserve
+      parameters:
+      - name: claimId
+        in: path
+        description: Unique identifier of the Claim
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: claimReserveId
+        in: path
+        description: Unique identifier of the ClaimReserve
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-Idempotency-Key
+        in: header
+        description: "Unique key for idempotent requests. If provided, ensures that\
+          \ identical requests with the same key will only be processed once."
+        required: false
+        schema:
+          type: string
+      responses:
+        "204":
+          description: ClaimReserve deleted
+        "404":
+          description: ClaimReserve not found
+  /api/v1/claims/{claimId}/recoveries/{claimRecoveryId}:
+    get:
+      tags:
+      - Claim Recoveries
+      summary: Get ClaimRecovery by id
+      description: Retrieve one ClaimRecovery
+      operationId: getClaimRecoveryById
+      parameters:
+      - name: claimId
+        in: path
+        description: Unique identifier of the Claim
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: claimRecoveryId
+        in: path
+        description: Unique identifier of the ClaimRecovery
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-Idempotency-Key
+        in: header
+        description: "Unique key for idempotent requests. If provided, ensures that\
+          \ identical requests with the same key will only be processed once."
+        required: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: ClaimRecovery found
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ClaimRecoveryDTO"
+        "404":
+          description: ClaimRecovery not found
+    put:
+      tags:
+      - Claim Recoveries
+      summary: Update ClaimRecovery
+      description: Update an existing ClaimRecovery
+      operationId: updateClaimRecovery
+      parameters:
+      - name: claimId
+        in: path
+        description: Unique identifier of the Claim
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: claimRecoveryId
+        in: path
+        description: Unique identifier of the ClaimRecovery
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-Idempotency-Key
+        in: header
+        description: "Unique key for idempotent requests. If provided, ensures that\
+          \ identical requests with the same key will only be processed once."
+        required: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ClaimRecoveryDTO"
+        required: true
+      responses:
+        "200":
+          description: ClaimRecovery updated
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ClaimRecoveryDTO"
+        "400":
+          description: Invalid data
+        "404":
+          description: ClaimRecovery not found
+    delete:
+      tags:
+      - Claim Recoveries
+      summary: Delete ClaimRecovery
+      description: Delete a ClaimRecovery
+      operationId: deleteClaimRecovery
+      parameters:
+      - name: claimId
+        in: path
+        description: Unique identifier of the Claim
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: claimRecoveryId
+        in: path
+        description: Unique identifier of the ClaimRecovery
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-Idempotency-Key
+        in: header
+        description: "Unique key for idempotent requests. If provided, ensures that\
+          \ identical requests with the same key will only be processed once."
+        required: false
+        schema:
+          type: string
+      responses:
+        "204":
+          description: ClaimRecovery deleted
+        "404":
+          description: ClaimRecovery not found
+  /api/v1/claims/{claimId}/parties/{claimPartyId}:
+    get:
+      tags:
+      - Claim Parties
+      summary: Get ClaimParty by id
+      description: Retrieve one ClaimParty
+      operationId: getClaimPartyById
+      parameters:
+      - name: claimId
+        in: path
+        description: Unique identifier of the Claim
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: claimPartyId
+        in: path
+        description: Unique identifier of the ClaimParty
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-Idempotency-Key
+        in: header
+        description: "Unique key for idempotent requests. If provided, ensures that\
+          \ identical requests with the same key will only be processed once."
+        required: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: ClaimParty found
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ClaimPartyDTO"
+        "404":
+          description: ClaimParty not found
+    put:
+      tags:
+      - Claim Parties
+      summary: Update ClaimParty
+      description: Update an existing ClaimParty
+      operationId: updateClaimParty
+      parameters:
+      - name: claimId
+        in: path
+        description: Unique identifier of the Claim
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: claimPartyId
+        in: path
+        description: Unique identifier of the ClaimParty
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-Idempotency-Key
+        in: header
+        description: "Unique key for idempotent requests. If provided, ensures that\
+          \ identical requests with the same key will only be processed once."
+        required: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ClaimPartyDTO"
+        required: true
+      responses:
+        "200":
+          description: ClaimParty updated
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ClaimPartyDTO"
+        "400":
+          description: Invalid data
+        "404":
+          description: ClaimParty not found
+    delete:
+      tags:
+      - Claim Parties
+      summary: Delete ClaimParty
+      description: Delete a ClaimParty
+      operationId: deleteClaimParty
+      parameters:
+      - name: claimId
+        in: path
+        description: Unique identifier of the Claim
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: claimPartyId
+        in: path
+        description: Unique identifier of the ClaimParty
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-Idempotency-Key
+        in: header
+        description: "Unique key for idempotent requests. If provided, ensures that\
+          \ identical requests with the same key will only be processed once."
+        required: false
+        schema:
+          type: string
+      responses:
+        "204":
+          description: ClaimParty deleted
+        "404":
+          description: ClaimParty not found
+  /api/v1/claims/{claimId}/fraud-indicators/{fraudIndicatorId}:
+    get:
+      tags:
+      - Fraud Indicators
+      summary: Get FraudIndicator by id
+      description: Retrieve one FraudIndicator
+      operationId: getFraudIndicatorById
+      parameters:
+      - name: claimId
+        in: path
+        description: Unique identifier of the Claim
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: fraudIndicatorId
+        in: path
+        description: Unique identifier of the FraudIndicator
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-Idempotency-Key
+        in: header
+        description: "Unique key for idempotent requests. If provided, ensures that\
+          \ identical requests with the same key will only be processed once."
+        required: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: FraudIndicator found
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/FraudIndicatorDTO"
+        "404":
+          description: FraudIndicator not found
+    put:
+      tags:
+      - Fraud Indicators
+      summary: Update FraudIndicator
+      description: Update an existing FraudIndicator
+      operationId: updateFraudIndicator
+      parameters:
+      - name: claimId
+        in: path
+        description: Unique identifier of the Claim
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: fraudIndicatorId
+        in: path
+        description: Unique identifier of the FraudIndicator
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-Idempotency-Key
+        in: header
+        description: "Unique key for idempotent requests. If provided, ensures that\
+          \ identical requests with the same key will only be processed once."
+        required: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FraudIndicatorDTO"
+        required: true
+      responses:
+        "200":
+          description: FraudIndicator updated
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/FraudIndicatorDTO"
+        "400":
+          description: Invalid data
+        "404":
+          description: FraudIndicator not found
+    delete:
+      tags:
+      - Fraud Indicators
+      summary: Delete FraudIndicator
+      description: Delete a FraudIndicator
+      operationId: deleteFraudIndicator
+      parameters:
+      - name: claimId
+        in: path
+        description: Unique identifier of the Claim
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: fraudIndicatorId
+        in: path
+        description: Unique identifier of the FraudIndicator
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-Idempotency-Key
+        in: header
+        description: "Unique key for idempotent requests. If provided, ensures that\
+          \ identical requests with the same key will only be processed once."
+        required: false
+        schema:
+          type: string
+      responses:
+        "204":
+          description: FraudIndicator deleted
+        "404":
+          description: FraudIndicator not found
+  /api/v1/claims/{claimId}/evidence/{claimEvidenceId}:
+    get:
+      tags:
+      - Claim Evidence
+      summary: Get ClaimEvidence by id
+      description: Retrieve one ClaimEvidence
+      operationId: getClaimEvidenceById
+      parameters:
+      - name: claimId
+        in: path
+        description: Unique identifier of the Claim
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: claimEvidenceId
+        in: path
+        description: Unique identifier of the ClaimEvidence
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-Idempotency-Key
+        in: header
+        description: "Unique key for idempotent requests. If provided, ensures that\
+          \ identical requests with the same key will only be processed once."
+        required: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: ClaimEvidence found
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ClaimEvidenceDTO"
+        "404":
+          description: ClaimEvidence not found
+    put:
+      tags:
+      - Claim Evidence
+      summary: Update ClaimEvidence
+      description: Update an existing ClaimEvidence
+      operationId: updateClaimEvidence
+      parameters:
+      - name: claimId
+        in: path
+        description: Unique identifier of the Claim
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: claimEvidenceId
+        in: path
+        description: Unique identifier of the ClaimEvidence
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-Idempotency-Key
+        in: header
+        description: "Unique key for idempotent requests. If provided, ensures that\
+          \ identical requests with the same key will only be processed once."
+        required: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ClaimEvidenceDTO"
+        required: true
+      responses:
+        "200":
+          description: ClaimEvidence updated
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ClaimEvidenceDTO"
+        "400":
+          description: Invalid data
+        "404":
+          description: ClaimEvidence not found
+    delete:
+      tags:
+      - Claim Evidence
+      summary: Delete ClaimEvidence
+      description: Delete a ClaimEvidence
+      operationId: deleteClaimEvidence
+      parameters:
+      - name: claimId
+        in: path
+        description: Unique identifier of the Claim
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: claimEvidenceId
+        in: path
+        description: Unique identifier of the ClaimEvidence
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-Idempotency-Key
+        in: header
+        description: "Unique key for idempotent requests. If provided, ensures that\
+          \ identical requests with the same key will only be processed once."
+        required: false
+        schema:
+          type: string
+      responses:
+        "204":
+          description: ClaimEvidence deleted
+        "404":
+          description: ClaimEvidence not found
+  /api/v1/claims/{claimId}/denials/{claimDenialId}:
+    get:
+      tags:
+      - Claim Denials
+      summary: Get ClaimDenial by id
+      description: Retrieve one ClaimDenial
+      operationId: getClaimDenialById
+      parameters:
+      - name: claimId
+        in: path
+        description: Unique identifier of the Claim
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: claimDenialId
+        in: path
+        description: Unique identifier of the ClaimDenial
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-Idempotency-Key
+        in: header
+        description: "Unique key for idempotent requests. If provided, ensures that\
+          \ identical requests with the same key will only be processed once."
+        required: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: ClaimDenial found
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ClaimDenialDTO"
+        "404":
+          description: ClaimDenial not found
+    put:
+      tags:
+      - Claim Denials
+      summary: Update ClaimDenial
+      description: Update an existing ClaimDenial
+      operationId: updateClaimDenial
+      parameters:
+      - name: claimId
+        in: path
+        description: Unique identifier of the Claim
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: claimDenialId
+        in: path
+        description: Unique identifier of the ClaimDenial
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-Idempotency-Key
+        in: header
+        description: "Unique key for idempotent requests. If provided, ensures that\
+          \ identical requests with the same key will only be processed once."
+        required: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ClaimDenialDTO"
+        required: true
+      responses:
+        "200":
+          description: ClaimDenial updated
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ClaimDenialDTO"
+        "400":
+          description: Invalid data
+        "404":
+          description: ClaimDenial not found
+    delete:
+      tags:
+      - Claim Denials
+      summary: Delete ClaimDenial
+      description: Delete a ClaimDenial
+      operationId: deleteClaimDenial
+      parameters:
+      - name: claimId
+        in: path
+        description: Unique identifier of the Claim
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: claimDenialId
+        in: path
+        description: Unique identifier of the ClaimDenial
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-Idempotency-Key
+        in: header
+        description: "Unique key for idempotent requests. If provided, ensures that\
+          \ identical requests with the same key will only be processed once."
+        required: false
+        schema:
+          type: string
+      responses:
+        "204":
+          description: ClaimDenial deleted
+        "404":
+          description: ClaimDenial not found
+  /api/v1/claims/{claimId}/coverages/{claimCoverageId}:
+    get:
+      tags:
+      - Claim Coverages
+      summary: Get ClaimCoverage by id
+      description: Retrieve one ClaimCoverage
+      operationId: getClaimCoverageById
+      parameters:
+      - name: claimId
+        in: path
+        description: Unique identifier of the Claim
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: claimCoverageId
+        in: path
+        description: Unique identifier of the ClaimCoverage
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-Idempotency-Key
+        in: header
+        description: "Unique key for idempotent requests. If provided, ensures that\
+          \ identical requests with the same key will only be processed once."
+        required: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: ClaimCoverage found
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ClaimCoverageDTO"
+        "404":
+          description: ClaimCoverage not found
+    put:
+      tags:
+      - Claim Coverages
+      summary: Update ClaimCoverage
+      description: Update an existing ClaimCoverage
+      operationId: updateClaimCoverage
+      parameters:
+      - name: claimId
+        in: path
+        description: Unique identifier of the Claim
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: claimCoverageId
+        in: path
+        description: Unique identifier of the ClaimCoverage
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-Idempotency-Key
+        in: header
+        description: "Unique key for idempotent requests. If provided, ensures that\
+          \ identical requests with the same key will only be processed once."
+        required: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ClaimCoverageDTO"
+        required: true
+      responses:
+        "200":
+          description: ClaimCoverage updated
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ClaimCoverageDTO"
+        "400":
+          description: Invalid data
+        "404":
+          description: ClaimCoverage not found
+    delete:
+      tags:
+      - Claim Coverages
+      summary: Delete ClaimCoverage
+      description: Delete a ClaimCoverage
+      operationId: deleteClaimCoverage
+      parameters:
+      - name: claimId
+        in: path
+        description: Unique identifier of the Claim
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: claimCoverageId
+        in: path
+        description: Unique identifier of the ClaimCoverage
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-Idempotency-Key
+        in: header
+        description: "Unique key for idempotent requests. If provided, ensures that\
+          \ identical requests with the same key will only be processed once."
+        required: false
+        schema:
+          type: string
+      responses:
+        "204":
+          description: ClaimCoverage deleted
+        "404":
+          description: ClaimCoverage not found
+  /api/v1/claims/{claimId}/coverage-checks/{coverageCheckId}:
+    get:
+      tags:
+      - Coverage Checks
+      summary: Get CoverageCheck by id
+      description: Retrieve one CoverageCheck
+      operationId: getCoverageCheckById
+      parameters:
+      - name: claimId
+        in: path
+        description: Unique identifier of the Claim
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: coverageCheckId
+        in: path
+        description: Unique identifier of the CoverageCheck
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-Idempotency-Key
+        in: header
+        description: "Unique key for idempotent requests. If provided, ensures that\
+          \ identical requests with the same key will only be processed once."
+        required: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: CoverageCheck found
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/CoverageCheckDTO"
+        "404":
+          description: CoverageCheck not found
+    put:
+      tags:
+      - Coverage Checks
+      summary: Update CoverageCheck
+      description: Update an existing CoverageCheck
+      operationId: updateCoverageCheck
+      parameters:
+      - name: claimId
+        in: path
+        description: Unique identifier of the Claim
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: coverageCheckId
+        in: path
+        description: Unique identifier of the CoverageCheck
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-Idempotency-Key
+        in: header
+        description: "Unique key for idempotent requests. If provided, ensures that\
+          \ identical requests with the same key will only be processed once."
+        required: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CoverageCheckDTO"
+        required: true
+      responses:
+        "200":
+          description: CoverageCheck updated
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/CoverageCheckDTO"
+        "400":
+          description: Invalid data
+        "404":
+          description: CoverageCheck not found
+    delete:
+      tags:
+      - Coverage Checks
+      summary: Delete CoverageCheck
+      description: Delete a CoverageCheck
+      operationId: deleteCoverageCheck
+      parameters:
+      - name: claimId
+        in: path
+        description: Unique identifier of the Claim
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: coverageCheckId
+        in: path
+        description: Unique identifier of the CoverageCheck
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-Idempotency-Key
+        in: header
+        description: "Unique key for idempotent requests. If provided, ensures that\
+          \ identical requests with the same key will only be processed once."
+        required: false
+        schema:
+          type: string
+      responses:
+        "204":
+          description: CoverageCheck deleted
+        "404":
+          description: CoverageCheck not found
+  /api/v1/claims/{claimId}/assessments/{claimAssessmentId}:
+    get:
+      tags:
+      - Claim Assessments
+      summary: Get ClaimAssessment by id
+      description: Retrieve one ClaimAssessment
+      operationId: getClaimAssessmentById
+      parameters:
+      - name: claimId
+        in: path
+        description: Unique identifier of the Claim
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: claimAssessmentId
+        in: path
+        description: Unique identifier of the ClaimAssessment
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-Idempotency-Key
+        in: header
+        description: "Unique key for idempotent requests. If provided, ensures that\
+          \ identical requests with the same key will only be processed once."
+        required: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: ClaimAssessment found
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ClaimAssessmentDTO"
+        "404":
+          description: ClaimAssessment not found
+    put:
+      tags:
+      - Claim Assessments
+      summary: Update ClaimAssessment
+      description: Update an existing ClaimAssessment
+      operationId: updateClaimAssessment
+      parameters:
+      - name: claimId
+        in: path
+        description: Unique identifier of the Claim
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: claimAssessmentId
+        in: path
+        description: Unique identifier of the ClaimAssessment
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-Idempotency-Key
+        in: header
+        description: "Unique key for idempotent requests. If provided, ensures that\
+          \ identical requests with the same key will only be processed once."
+        required: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ClaimAssessmentDTO"
+        required: true
+      responses:
+        "200":
+          description: ClaimAssessment updated
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ClaimAssessmentDTO"
+        "400":
+          description: Invalid data
+        "404":
+          description: ClaimAssessment not found
+    delete:
+      tags:
+      - Claim Assessments
+      summary: Delete ClaimAssessment
+      description: Delete a ClaimAssessment
+      operationId: deleteClaimAssessment
+      parameters:
+      - name: claimId
+        in: path
+        description: Unique identifier of the Claim
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: claimAssessmentId
+        in: path
+        description: Unique identifier of the ClaimAssessment
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-Idempotency-Key
+        in: header
+        description: "Unique key for idempotent requests. If provided, ensures that\
+          \ identical requests with the same key will only be processed once."
+        required: false
+        schema:
+          type: string
+      responses:
+        "204":
+          description: ClaimAssessment deleted
+        "404":
+          description: ClaimAssessment not found
+  /api/v1/claims/{claimId}/adjusters/{adjusterAssignmentId}:
+    get:
+      tags:
+      - Adjuster Assignments
+      summary: Get AdjusterAssignment by id
+      description: Retrieve one AdjusterAssignment
+      operationId: getAdjusterAssignmentById
+      parameters:
+      - name: claimId
+        in: path
+        description: Unique identifier of the Claim
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: adjusterAssignmentId
+        in: path
+        description: Unique identifier of the AdjusterAssignment
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-Idempotency-Key
+        in: header
+        description: "Unique key for idempotent requests. If provided, ensures that\
+          \ identical requests with the same key will only be processed once."
+        required: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: AdjusterAssignment found
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/AdjusterAssignmentDTO"
+        "404":
+          description: AdjusterAssignment not found
+    put:
+      tags:
+      - Adjuster Assignments
+      summary: Update AdjusterAssignment
+      description: Update an existing AdjusterAssignment
+      operationId: updateAdjusterAssignment
+      parameters:
+      - name: claimId
+        in: path
+        description: Unique identifier of the Claim
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: adjusterAssignmentId
+        in: path
+        description: Unique identifier of the AdjusterAssignment
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-Idempotency-Key
+        in: header
+        description: "Unique key for idempotent requests. If provided, ensures that\
+          \ identical requests with the same key will only be processed once."
+        required: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AdjusterAssignmentDTO"
+        required: true
+      responses:
+        "200":
+          description: AdjusterAssignment updated
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/AdjusterAssignmentDTO"
+        "400":
+          description: Invalid data
+        "404":
+          description: AdjusterAssignment not found
+    delete:
+      tags:
+      - Adjuster Assignments
+      summary: Delete AdjusterAssignment
+      description: Delete a AdjusterAssignment
+      operationId: deleteAdjusterAssignment
+      parameters:
+      - name: claimId
+        in: path
+        description: Unique identifier of the Claim
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: adjusterAssignmentId
+        in: path
+        description: Unique identifier of the AdjusterAssignment
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-Idempotency-Key
+        in: header
+        description: "Unique key for idempotent requests. If provided, ensures that\
+          \ identical requests with the same key will only be processed once."
+        required: false
+        schema:
+          type: string
+      responses:
+        "204":
+          description: AdjusterAssignment deleted
+        "404":
+          description: AdjusterAssignment not found
+  /api/v1/claims:
+    post:
+      tags:
+      - Claims
+      summary: Create Claim
+      description: Create a Claim
+      operationId: createClaim
+      parameters:
+      - name: X-Idempotency-Key
+        in: header
+        description: "Unique key for idempotent requests. If provided, ensures that\
+          \ identical requests with the same key will only be processed once."
+        required: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ClaimDTO"
+        required: true
+      responses:
+        "201":
+          description: Claim created
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ClaimDTO"
+        "400":
+          description: Invalid data
+  /api/v1/claims/{claimId}/triage:
+    post:
+      tags:
+      - Claim Triage
+      summary: Create ClaimTriage
+      description: Create a ClaimTriage
+      operationId: createClaimTriage
+      parameters:
+      - name: claimId
+        in: path
+        description: Unique identifier of the Claim
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-Idempotency-Key
+        in: header
+        description: "Unique key for idempotent requests. If provided, ensures that\
+          \ identical requests with the same key will only be processed once."
+        required: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ClaimTriageDTO"
+        required: true
+      responses:
+        "201":
+          description: ClaimTriage created
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ClaimTriageDTO"
+        "400":
+          description: Invalid data
+  /api/v1/claims/{claimId}/triage/filter:
+    post:
+      tags:
+      - Claim Triage
+      summary: Filter claimTriages
+      description: Retrieve a page of claimTriages matching the filter
+      operationId: filterClaimTriages
+      parameters:
+      - name: claimId
+        in: path
+        description: Unique identifier of the Claim
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-Idempotency-Key
+        in: header
+        description: "Unique key for idempotent requests. If provided, ensures that\
+          \ identical requests with the same key will only be processed once."
+        required: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FilterRequestClaimTriageDTO"
+        required: true
+      responses:
+        "200":
+          description: Page of matching records
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/PaginationResponseClaimTriageDTO"
+        "400":
+          description: Invalid filter request
+  /api/v1/claims/{claimId}/status-history:
+    post:
+      tags:
+      - Claim Status History
+      summary: Create ClaimStatusHistory
+      description: Create a ClaimStatusHistory
+      operationId: createClaimStatusHistory
+      parameters:
+      - name: claimId
+        in: path
+        description: Unique identifier of the Claim
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-Idempotency-Key
+        in: header
+        description: "Unique key for idempotent requests. If provided, ensures that\
+          \ identical requests with the same key will only be processed once."
+        required: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ClaimStatusHistoryDTO"
+        required: true
+      responses:
+        "201":
+          description: ClaimStatusHistory created
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ClaimStatusHistoryDTO"
+        "400":
+          description: Invalid data
+  /api/v1/claims/{claimId}/status-history/filter:
+    post:
+      tags:
+      - Claim Status History
+      summary: Filter claimStatusHistories
+      description: Retrieve a page of claimStatusHistories matching the filter
+      operationId: filterClaimStatusHistories
+      parameters:
+      - name: claimId
+        in: path
+        description: Unique identifier of the Claim
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-Idempotency-Key
+        in: header
+        description: "Unique key for idempotent requests. If provided, ensures that\
+          \ identical requests with the same key will only be processed once."
+        required: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FilterRequestClaimStatusHistoryDTO"
+        required: true
+      responses:
+        "200":
+          description: Page of matching records
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/PaginationResponseClaimStatusHistoryDTO"
+        "400":
+          description: Invalid filter request
+  /api/v1/claims/{claimId}/siu-referrals:
+    post:
+      tags:
+      - SIU Referrals
+      summary: Create SiuReferral
+      description: Create a SiuReferral
+      operationId: createSiuReferral
+      parameters:
+      - name: claimId
+        in: path
+        description: Unique identifier of the Claim
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-Idempotency-Key
+        in: header
+        description: "Unique key for idempotent requests. If provided, ensures that\
+          \ identical requests with the same key will only be processed once."
+        required: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SiuReferralDTO"
+        required: true
+      responses:
+        "201":
+          description: SiuReferral created
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/SiuReferralDTO"
+        "400":
+          description: Invalid data
+  /api/v1/claims/{claimId}/siu-referrals/filter:
+    post:
+      tags:
+      - SIU Referrals
+      summary: Filter siuReferrals
+      description: Retrieve a page of siuReferrals matching the filter
+      operationId: filterSiuReferrals
+      parameters:
+      - name: claimId
+        in: path
+        description: Unique identifier of the Claim
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-Idempotency-Key
+        in: header
+        description: "Unique key for idempotent requests. If provided, ensures that\
+          \ identical requests with the same key will only be processed once."
+        required: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FilterRequestSiuReferralDTO"
+        required: true
+      responses:
+        "200":
+          description: Page of matching records
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/PaginationResponseSiuReferralDTO"
+        "400":
+          description: Invalid filter request
+  /api/v1/claims/{claimId}/settlements:
+    post:
+      tags:
+      - Claim Settlements
+      summary: Create ClaimSettlement
+      description: Create a ClaimSettlement
+      operationId: createClaimSettlement
+      parameters:
+      - name: claimId
+        in: path
+        description: Unique identifier of the Claim
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-Idempotency-Key
+        in: header
+        description: "Unique key for idempotent requests. If provided, ensures that\
+          \ identical requests with the same key will only be processed once."
+        required: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ClaimSettlementDTO"
+        required: true
+      responses:
+        "201":
+          description: ClaimSettlement created
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ClaimSettlementDTO"
+        "400":
+          description: Invalid data
+  /api/v1/claims/{claimId}/settlements/filter:
+    post:
+      tags:
+      - Claim Settlements
+      summary: Filter claimSettlements
+      description: Retrieve a page of claimSettlements matching the filter
+      operationId: filterClaimSettlements
+      parameters:
+      - name: claimId
+        in: path
+        description: Unique identifier of the Claim
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-Idempotency-Key
+        in: header
+        description: "Unique key for idempotent requests. If provided, ensures that\
+          \ identical requests with the same key will only be processed once."
+        required: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FilterRequestClaimSettlementDTO"
+        required: true
+      responses:
+        "200":
+          description: Page of matching records
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/PaginationResponseClaimSettlementDTO"
+        "400":
+          description: Invalid filter request
+  /api/v1/claims/{claimId}/reserves:
+    post:
+      tags:
+      - Claim Reserves
+      summary: Create ClaimReserve
+      description: Create a ClaimReserve
+      operationId: createClaimReserve
+      parameters:
+      - name: claimId
+        in: path
+        description: Unique identifier of the Claim
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-Idempotency-Key
+        in: header
+        description: "Unique key for idempotent requests. If provided, ensures that\
+          \ identical requests with the same key will only be processed once."
+        required: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ClaimReserveDTO"
+        required: true
+      responses:
+        "201":
+          description: ClaimReserve created
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ClaimReserveDTO"
+        "400":
+          description: Invalid data
+  /api/v1/claims/{claimId}/reserves/filter:
+    post:
+      tags:
+      - Claim Reserves
+      summary: Filter claimReserves
+      description: Retrieve a page of claimReserves matching the filter
+      operationId: filterClaimReserves
+      parameters:
+      - name: claimId
+        in: path
+        description: Unique identifier of the Claim
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-Idempotency-Key
+        in: header
+        description: "Unique key for idempotent requests. If provided, ensures that\
+          \ identical requests with the same key will only be processed once."
+        required: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FilterRequestClaimReserveDTO"
+        required: true
+      responses:
+        "200":
+          description: Page of matching records
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/PaginationResponseClaimReserveDTO"
+        "400":
+          description: Invalid filter request
+  /api/v1/claims/{claimId}/recoveries:
+    post:
+      tags:
+      - Claim Recoveries
+      summary: Create ClaimRecovery
+      description: Create a ClaimRecovery
+      operationId: createClaimRecovery
+      parameters:
+      - name: claimId
+        in: path
+        description: Unique identifier of the Claim
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-Idempotency-Key
+        in: header
+        description: "Unique key for idempotent requests. If provided, ensures that\
+          \ identical requests with the same key will only be processed once."
+        required: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ClaimRecoveryDTO"
+        required: true
+      responses:
+        "201":
+          description: ClaimRecovery created
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ClaimRecoveryDTO"
+        "400":
+          description: Invalid data
+  /api/v1/claims/{claimId}/recoveries/filter:
+    post:
+      tags:
+      - Claim Recoveries
+      summary: Filter claimRecoveries
+      description: Retrieve a page of claimRecoveries matching the filter
+      operationId: filterClaimRecoveries
+      parameters:
+      - name: claimId
+        in: path
+        description: Unique identifier of the Claim
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-Idempotency-Key
+        in: header
+        description: "Unique key for idempotent requests. If provided, ensures that\
+          \ identical requests with the same key will only be processed once."
+        required: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FilterRequestClaimRecoveryDTO"
+        required: true
+      responses:
+        "200":
+          description: Page of matching records
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/PaginationResponseClaimRecoveryDTO"
+        "400":
+          description: Invalid filter request
+  /api/v1/claims/{claimId}/parties:
+    post:
+      tags:
+      - Claim Parties
+      summary: Create ClaimParty
+      description: Create a ClaimParty
+      operationId: createClaimParty
+      parameters:
+      - name: claimId
+        in: path
+        description: Unique identifier of the Claim
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-Idempotency-Key
+        in: header
+        description: "Unique key for idempotent requests. If provided, ensures that\
+          \ identical requests with the same key will only be processed once."
+        required: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ClaimPartyDTO"
+        required: true
+      responses:
+        "201":
+          description: ClaimParty created
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ClaimPartyDTO"
+        "400":
+          description: Invalid data
+  /api/v1/claims/{claimId}/parties/filter:
+    post:
+      tags:
+      - Claim Parties
+      summary: Filter claimParties
+      description: Retrieve a page of claimParties matching the filter
+      operationId: filterClaimParties
+      parameters:
+      - name: claimId
+        in: path
+        description: Unique identifier of the Claim
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-Idempotency-Key
+        in: header
+        description: "Unique key for idempotent requests. If provided, ensures that\
+          \ identical requests with the same key will only be processed once."
+        required: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FilterRequestClaimPartyDTO"
+        required: true
+      responses:
+        "200":
+          description: Page of matching records
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/PaginationResponseClaimPartyDTO"
+        "400":
+          description: Invalid filter request
+  /api/v1/claims/{claimId}/fraud-indicators:
+    post:
+      tags:
+      - Fraud Indicators
+      summary: Create FraudIndicator
+      description: Create a FraudIndicator
+      operationId: createFraudIndicator
+      parameters:
+      - name: claimId
+        in: path
+        description: Unique identifier of the Claim
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-Idempotency-Key
+        in: header
+        description: "Unique key for idempotent requests. If provided, ensures that\
+          \ identical requests with the same key will only be processed once."
+        required: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FraudIndicatorDTO"
+        required: true
+      responses:
+        "201":
+          description: FraudIndicator created
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/FraudIndicatorDTO"
+        "400":
+          description: Invalid data
+  /api/v1/claims/{claimId}/fraud-indicators/filter:
+    post:
+      tags:
+      - Fraud Indicators
+      summary: Filter fraudIndicators
+      description: Retrieve a page of fraudIndicators matching the filter
+      operationId: filterFraudIndicators
+      parameters:
+      - name: claimId
+        in: path
+        description: Unique identifier of the Claim
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-Idempotency-Key
+        in: header
+        description: "Unique key for idempotent requests. If provided, ensures that\
+          \ identical requests with the same key will only be processed once."
+        required: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FilterRequestFraudIndicatorDTO"
+        required: true
+      responses:
+        "200":
+          description: Page of matching records
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/PaginationResponseFraudIndicatorDTO"
+        "400":
+          description: Invalid filter request
+  /api/v1/claims/{claimId}/evidence:
+    post:
+      tags:
+      - Claim Evidence
+      summary: Create ClaimEvidence
+      description: Create a ClaimEvidence
+      operationId: createClaimEvidence
+      parameters:
+      - name: claimId
+        in: path
+        description: Unique identifier of the Claim
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-Idempotency-Key
+        in: header
+        description: "Unique key for idempotent requests. If provided, ensures that\
+          \ identical requests with the same key will only be processed once."
+        required: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ClaimEvidenceDTO"
+        required: true
+      responses:
+        "201":
+          description: ClaimEvidence created
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ClaimEvidenceDTO"
+        "400":
+          description: Invalid data
+  /api/v1/claims/{claimId}/evidence/filter:
+    post:
+      tags:
+      - Claim Evidence
+      summary: Filter claimEvidenceItems
+      description: Retrieve a page of claimEvidenceItems matching the filter
+      operationId: filterClaimEvidenceItems
+      parameters:
+      - name: claimId
+        in: path
+        description: Unique identifier of the Claim
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-Idempotency-Key
+        in: header
+        description: "Unique key for idempotent requests. If provided, ensures that\
+          \ identical requests with the same key will only be processed once."
+        required: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FilterRequestClaimEvidenceDTO"
+        required: true
+      responses:
+        "200":
+          description: Page of matching records
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/PaginationResponseClaimEvidenceDTO"
+        "400":
+          description: Invalid filter request
+  /api/v1/claims/{claimId}/denials:
+    post:
+      tags:
+      - Claim Denials
+      summary: Create ClaimDenial
+      description: Create a ClaimDenial
+      operationId: createClaimDenial
+      parameters:
+      - name: claimId
+        in: path
+        description: Unique identifier of the Claim
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-Idempotency-Key
+        in: header
+        description: "Unique key for idempotent requests. If provided, ensures that\
+          \ identical requests with the same key will only be processed once."
+        required: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ClaimDenialDTO"
+        required: true
+      responses:
+        "201":
+          description: ClaimDenial created
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ClaimDenialDTO"
+        "400":
+          description: Invalid data
+  /api/v1/claims/{claimId}/denials/filter:
+    post:
+      tags:
+      - Claim Denials
+      summary: Filter claimDenials
+      description: Retrieve a page of claimDenials matching the filter
+      operationId: filterClaimDenials
+      parameters:
+      - name: claimId
+        in: path
+        description: Unique identifier of the Claim
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-Idempotency-Key
+        in: header
+        description: "Unique key for idempotent requests. If provided, ensures that\
+          \ identical requests with the same key will only be processed once."
+        required: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FilterRequestClaimDenialDTO"
+        required: true
+      responses:
+        "200":
+          description: Page of matching records
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/PaginationResponseClaimDenialDTO"
+        "400":
+          description: Invalid filter request
+  /api/v1/claims/{claimId}/coverages:
+    post:
+      tags:
+      - Claim Coverages
+      summary: Create ClaimCoverage
+      description: Create a ClaimCoverage
+      operationId: createClaimCoverage
+      parameters:
+      - name: claimId
+        in: path
+        description: Unique identifier of the Claim
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-Idempotency-Key
+        in: header
+        description: "Unique key for idempotent requests. If provided, ensures that\
+          \ identical requests with the same key will only be processed once."
+        required: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ClaimCoverageDTO"
+        required: true
+      responses:
+        "201":
+          description: ClaimCoverage created
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ClaimCoverageDTO"
+        "400":
+          description: Invalid data
+  /api/v1/claims/{claimId}/coverages/filter:
+    post:
+      tags:
+      - Claim Coverages
+      summary: Filter claimCoverages
+      description: Retrieve a page of claimCoverages matching the filter
+      operationId: filterClaimCoverages
+      parameters:
+      - name: claimId
+        in: path
+        description: Unique identifier of the Claim
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-Idempotency-Key
+        in: header
+        description: "Unique key for idempotent requests. If provided, ensures that\
+          \ identical requests with the same key will only be processed once."
+        required: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FilterRequestClaimCoverageDTO"
+        required: true
+      responses:
+        "200":
+          description: Page of matching records
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/PaginationResponseClaimCoverageDTO"
+        "400":
+          description: Invalid filter request
+  /api/v1/claims/{claimId}/coverage-checks:
+    post:
+      tags:
+      - Coverage Checks
+      summary: Create CoverageCheck
+      description: Create a CoverageCheck
+      operationId: createCoverageCheck
+      parameters:
+      - name: claimId
+        in: path
+        description: Unique identifier of the Claim
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-Idempotency-Key
+        in: header
+        description: "Unique key for idempotent requests. If provided, ensures that\
+          \ identical requests with the same key will only be processed once."
+        required: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CoverageCheckDTO"
+        required: true
+      responses:
+        "201":
+          description: CoverageCheck created
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/CoverageCheckDTO"
+        "400":
+          description: Invalid data
+  /api/v1/claims/{claimId}/coverage-checks/filter:
+    post:
+      tags:
+      - Coverage Checks
+      summary: Filter coverageChecks
+      description: Retrieve a page of coverageChecks matching the filter
+      operationId: filterCoverageChecks
+      parameters:
+      - name: claimId
+        in: path
+        description: Unique identifier of the Claim
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-Idempotency-Key
+        in: header
+        description: "Unique key for idempotent requests. If provided, ensures that\
+          \ identical requests with the same key will only be processed once."
+        required: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FilterRequestCoverageCheckDTO"
+        required: true
+      responses:
+        "200":
+          description: Page of matching records
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/PaginationResponseCoverageCheckDTO"
+        "400":
+          description: Invalid filter request
+  /api/v1/claims/{claimId}/assessments:
+    post:
+      tags:
+      - Claim Assessments
+      summary: Create ClaimAssessment
+      description: Create a ClaimAssessment
+      operationId: createClaimAssessment
+      parameters:
+      - name: claimId
+        in: path
+        description: Unique identifier of the Claim
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-Idempotency-Key
+        in: header
+        description: "Unique key for idempotent requests. If provided, ensures that\
+          \ identical requests with the same key will only be processed once."
+        required: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ClaimAssessmentDTO"
+        required: true
+      responses:
+        "201":
+          description: ClaimAssessment created
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ClaimAssessmentDTO"
+        "400":
+          description: Invalid data
+  /api/v1/claims/{claimId}/assessments/filter:
+    post:
+      tags:
+      - Claim Assessments
+      summary: Filter claimAssessments
+      description: Retrieve a page of claimAssessments matching the filter
+      operationId: filterClaimAssessments
+      parameters:
+      - name: claimId
+        in: path
+        description: Unique identifier of the Claim
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-Idempotency-Key
+        in: header
+        description: "Unique key for idempotent requests. If provided, ensures that\
+          \ identical requests with the same key will only be processed once."
+        required: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FilterRequestClaimAssessmentDTO"
+        required: true
+      responses:
+        "200":
+          description: Page of matching records
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/PaginationResponseClaimAssessmentDTO"
+        "400":
+          description: Invalid filter request
+  /api/v1/claims/{claimId}/adjusters:
+    post:
+      tags:
+      - Adjuster Assignments
+      summary: Create AdjusterAssignment
+      description: Create a AdjusterAssignment
+      operationId: createAdjusterAssignment
+      parameters:
+      - name: claimId
+        in: path
+        description: Unique identifier of the Claim
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-Idempotency-Key
+        in: header
+        description: "Unique key for idempotent requests. If provided, ensures that\
+          \ identical requests with the same key will only be processed once."
+        required: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AdjusterAssignmentDTO"
+        required: true
+      responses:
+        "201":
+          description: AdjusterAssignment created
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/AdjusterAssignmentDTO"
+        "400":
+          description: Invalid data
+  /api/v1/claims/{claimId}/adjusters/filter:
+    post:
+      tags:
+      - Adjuster Assignments
+      summary: Filter adjusterAssignments
+      description: Retrieve a page of adjusterAssignments matching the filter
+      operationId: filterAdjusterAssignments
+      parameters:
+      - name: claimId
+        in: path
+        description: Unique identifier of the Claim
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-Idempotency-Key
+        in: header
+        description: "Unique key for idempotent requests. If provided, ensures that\
+          \ identical requests with the same key will only be processed once."
+        required: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FilterRequestAdjusterAssignmentDTO"
+        required: true
+      responses:
+        "200":
+          description: Page of matching records
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/PaginationResponseAdjusterAssignmentDTO"
+        "400":
+          description: Invalid filter request
+  /api/v1/claims/filter:
+    post:
+      tags:
+      - Claims
+      summary: Filter claims
+      description: Retrieve a page of claims matching the filter
+      operationId: filterClaims
+      parameters:
+      - name: X-Idempotency-Key
+        in: header
+        description: "Unique key for idempotent requests. If provided, ensures that\
+          \ identical requests with the same key will only be processed once."
+        required: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FilterRequestClaimDTO"
+        required: true
+      responses:
+        "200":
+          description: Page of matching records
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/PaginationResponseClaimDTO"
+        "400":
+          description: Invalid filter request
+components:
+  schemas:
+    ClaimDTO:
+      required:
+      - claimNumber
+      - claimStatus
+      - lossDate
+      - notifiedAt
+      - policyId
+      - tenantId
+      type: object
+      properties:
+        claimId:
+          type: string
+          format: uuid
+          readOnly: true
+        tenantId:
+          type: string
+          format: uuid
+        claimNumber:
+          maxLength: 64
+          minLength: 0
+          type: string
+        policyId:
+          type: string
+          format: uuid
+        contractId:
+          type: string
+          format: uuid
+        policyTransactionId:
+          type: string
+          format: uuid
+        claimStatus:
+          type: string
+          enum:
+          - NOTIFIED
+          - OPEN
+          - UNDER_ASSESSMENT
+          - RESERVED
+          - SETTLED
+          - CLOSED
+          - REOPENED
+          - DENIED
+        lossDate:
+          type: string
+          format: date
+        notifiedAt:
+          type: string
+          format: date-time
+        causeCode:
+          maxLength: 64
+          minLength: 0
+          type: string
+        description:
+          maxLength: 4000
+          minLength: 0
+          type: string
+        currency:
+          pattern: "[A-Z]{3}"
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    ClaimTriageDTO:
+      required:
+      - claimId
+      - triagePath
+      - triagedAt
+      type: object
+      properties:
+        claimTriageId:
+          type: string
+          format: uuid
+          readOnly: true
+        claimId:
+          type: string
+          format: uuid
+        triagePath:
+          type: string
+          enum:
+          - FAST_TRACK
+          - COMPLEX
+          - SIU
+        triagedAt:
+          type: string
+          format: date-time
+        notes:
+          maxLength: 4000
+          minLength: 0
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    ClaimStatusHistoryDTO:
+      required:
+      - changedAt
+      - claimId
+      - claimStatus
+      type: object
+      properties:
+        claimStatusHistoryId:
+          type: string
+          format: uuid
+          readOnly: true
+        claimId:
+          type: string
+          format: uuid
+        claimStatus:
+          type: string
+          enum:
+          - NOTIFIED
+          - OPEN
+          - UNDER_ASSESSMENT
+          - RESERVED
+          - SETTLED
+          - CLOSED
+          - REOPENED
+          - DENIED
+        statusReason:
+          maxLength: 500
+          minLength: 0
+          type: string
+        changedAt:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    SiuReferralDTO:
+      required:
+      - claimId
+      - reason
+      - referralStatus
+      - referredAt
+      type: object
+      properties:
+        siuReferralId:
+          type: string
+          format: uuid
+          readOnly: true
+        claimId:
+          type: string
+          format: uuid
+        referralStatus:
+          type: string
+          enum:
+          - OPEN
+          - RETURNED
+          - CONFIRMED
+          - CLEARED
+        referredAt:
+          type: string
+          format: date-time
+        reason:
+          maxLength: 4000
+          minLength: 0
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    ClaimSettlementDTO:
+      required:
+      - authorizedAmount
+      - claimId
+      - payeePartyId
+      - settlementStatus
+      type: object
+      properties:
+        claimSettlementId:
+          type: string
+          format: uuid
+          readOnly: true
+        claimId:
+          type: string
+          format: uuid
+        payeePartyId:
+          type: string
+          format: uuid
+        settlementStatus:
+          type: string
+          enum:
+          - PROPOSED
+          - AUTHORIZED
+          - PAID
+          - REJECTED
+        authorizedAmount:
+          type: number
+        currency:
+          pattern: "[A-Z]{3}"
+          type: string
+        paymentOrderId:
+          type: string
+          format: uuid
+        authorizedAt:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    ClaimReserveDTO:
+      required:
+      - amount
+      - claimId
+      - effectiveAt
+      - reserveType
+      type: object
+      properties:
+        claimReserveId:
+          type: string
+          format: uuid
+          readOnly: true
+        claimId:
+          type: string
+          format: uuid
+        reserveType:
+          type: string
+          enum:
+          - INDEMNITY
+          - EXPENSE
+          - RECOVERY
+        amount:
+          type: number
+        currency:
+          pattern: "[A-Z]{3}"
+          type: string
+        effectiveAt:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    ClaimRecoveryDTO:
+      required:
+      - claimId
+      - recoveryStatus
+      - recoveryType
+      type: object
+      properties:
+        claimRecoveryId:
+          type: string
+          format: uuid
+          readOnly: true
+        claimId:
+          type: string
+          format: uuid
+        recoveryType:
+          type: string
+          enum:
+          - SUBROGATION
+          - SALVAGE
+          - CONTRIBUTION
+        recoveryStatus:
+          type: string
+          enum:
+          - OPEN
+          - PURSUING
+          - RECOVERED
+          - CLOSED
+          - WRITTEN_OFF
+        expectedAmount:
+          type: number
+        recoveredAmount:
+          type: number
+        currency:
+          pattern: "[A-Z]{3}"
+          type: string
+        counterpartyPartyId:
+          type: string
+          format: uuid
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    ClaimPartyDTO:
+      required:
+      - claimId
+      - partyId
+      - role
+      type: object
+      properties:
+        claimPartyId:
+          type: string
+          format: uuid
+          readOnly: true
+        claimId:
+          type: string
+          format: uuid
+        partyId:
+          type: string
+          format: uuid
+        role:
+          type: string
+          enum:
+          - CLAIMANT
+          - INSURED
+          - PAYEE
+          - WITNESS
+          - BROKER
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    FraudIndicatorDTO:
+      required:
+      - claimId
+      - indicatorCode
+      - notedAt
+      - severity
+      type: object
+      properties:
+        fraudIndicatorId:
+          type: string
+          format: uuid
+          readOnly: true
+        claimId:
+          type: string
+          format: uuid
+        indicatorCode:
+          maxLength: 64
+          minLength: 0
+          type: string
+        severity:
+          type: string
+          enum:
+          - LOW
+          - MEDIUM
+          - HIGH
+        notedAt:
+          type: string
+          format: date-time
+        notes:
+          maxLength: 4000
+          minLength: 0
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    ClaimEvidenceDTO:
+      required:
+      - claimId
+      - documentId
+      - evidenceType
+      type: object
+      properties:
+        claimEvidenceId:
+          type: string
+          format: uuid
+          readOnly: true
+        claimId:
+          type: string
+          format: uuid
+        documentId:
+          type: string
+          format: uuid
+        evidenceType:
+          type: string
+          enum:
+          - FNOL
+          - PHOTO
+          - INVOICE
+          - REPORT
+          - CORRESPONDENCE
+          - OTHER
+        receivedAt:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    ClaimDenialDTO:
+      required:
+      - claimId
+      - denialReason
+      - deniedAt
+      type: object
+      properties:
+        claimDenialId:
+          type: string
+          format: uuid
+          readOnly: true
+        claimId:
+          type: string
+          format: uuid
+        denialReason:
+          maxLength: 4000
+          minLength: 0
+          type: string
+        deniedAt:
+          type: string
+          format: date-time
+        authorityReference:
+          maxLength: 200
+          minLength: 0
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    ClaimCoverageDTO:
+      required:
+      - claimId
+      - claimedAmount
+      - coverageId
+      type: object
+      properties:
+        claimCoverageId:
+          type: string
+          format: uuid
+          readOnly: true
+        claimId:
+          type: string
+          format: uuid
+        coverageId:
+          type: string
+          format: uuid
+        claimedAmount:
+          type: number
+        currency:
+          pattern: "[A-Z]{3}"
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    CoverageCheckDTO:
+      required:
+      - checkOutcome
+      - checkedAt
+      - claimId
+      - policyId
+      type: object
+      properties:
+        coverageCheckId:
+          type: string
+          format: uuid
+          readOnly: true
+        claimId:
+          type: string
+          format: uuid
+        policyId:
+          type: string
+          format: uuid
+        coverageId:
+          type: string
+          format: uuid
+        inForce:
+          type: boolean
+        triggerMet:
+          type: boolean
+        deductibleAmount:
+          type: number
+        checkOutcome:
+          type: string
+          enum:
+          - CONFIRMED
+          - NOT_IN_FORCE
+          - NOT_TRIGGERED
+          - EXCLUDED
+          - PENDING
+        checkedAt:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    ClaimAssessmentDTO:
+      required:
+      - assessedAt
+      - assessmentOutcome
+      - claimId
+      type: object
+      properties:
+        claimAssessmentId:
+          type: string
+          format: uuid
+          readOnly: true
+        claimId:
+          type: string
+          format: uuid
+        assessmentOutcome:
+          type: string
+          enum:
+          - COVERED
+          - PARTIAL
+          - NOT_COVERED
+          - PENDING
+        assessedAmount:
+          type: number
+        notes:
+          maxLength: 4000
+          minLength: 0
+          type: string
+        assessedAt:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    AdjusterAssignmentDTO:
+      required:
+      - adjusterPartyId
+      - assignedAt
+      - assignmentStatus
+      - claimId
+      type: object
+      properties:
+        adjusterAssignmentId:
+          type: string
+          format: uuid
+          readOnly: true
+        claimId:
+          type: string
+          format: uuid
+        adjusterPartyId:
+          type: string
+          format: uuid
+        assignedAt:
+          type: string
+          format: date-time
+        assignmentStatus:
+          type: string
+          enum:
+          - ASSIGNED
+          - COMPLETED
+          - CANCELLED
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    FilterOptions:
+      type: object
+      properties:
+        caseInsensitiveStrings:
+          type: boolean
+        includeInheritedFields:
+          type: boolean
+      description: Filter options for customizing filter behavior
+    FilterRequestClaimTriageDTO:
+      required:
+      - pagination
+      type: object
+      properties:
+        filters:
+          $ref: "#/components/schemas/ClaimTriageDTO"
+        rangeFilters:
+          $ref: "#/components/schemas/RangeFilter"
+        pagination:
+          $ref: "#/components/schemas/PaginationRequest"
+        options:
+          $ref: "#/components/schemas/FilterOptions"
+      description: Filter criteria
+    PaginationRequest:
+      type: object
+      properties:
+        pageNumber:
+          type: integer
+          description: The zero-based page number to retrieve.
+          format: int32
+          example: 0
+          default: 0
+        pageSize:
+          type: integer
+          description: The number of items per page.
+          format: int32
+          example: 10
+          default: 10
+        sortBy:
+          type: string
+          description: The field to sort the results by.
+          example: name
+        sortDirection:
+          type: string
+          description: "The direction of sorting, either ASC or DESC."
+          example: DESC
+          default: DESC
+      description: "Represents a pagination request for retrieving paginated results,\
+        \ including page number, size, sort field, and direction."
+    RangeFilter:
+      type: object
+      properties:
+        ranges:
+          type: object
+          additionalProperties:
+            $ref: "#/components/schemas/RangeObject"
+          description: Map of field names to their range criteria
+      description: Represents range filters for numeric fields
+    RangeObject:
+      type: object
+      properties:
+        from:
+          type: object
+          description: Start value of the range
+        to:
+          type: object
+          description: End value of the range
+      description: Represents a range with from and to values
+    PaginationResponseClaimTriageDTO:
+      type: object
+      properties:
+        content:
+          type: array
+          description: The list of items for the current page.
+          items:
+            $ref: "#/components/schemas/ClaimTriageDTO"
+        totalElements:
+          type: integer
+          description: The total number of elements across all pages.
+          format: int64
+        totalPages:
+          type: integer
+          description: The total number of pages based on the data size and page size.
+          format: int32
+        currentPage:
+          type: integer
+          description: "The current page number, typically zero-based."
+          format: int32
+      description: Represents a paginated response containing a list of items and
+        pagination metadata.
+    FilterRequestClaimStatusHistoryDTO:
+      required:
+      - pagination
+      type: object
+      properties:
+        filters:
+          $ref: "#/components/schemas/ClaimStatusHistoryDTO"
+        rangeFilters:
+          $ref: "#/components/schemas/RangeFilter"
+        pagination:
+          $ref: "#/components/schemas/PaginationRequest"
+        options:
+          $ref: "#/components/schemas/FilterOptions"
+      description: Filter criteria
+    PaginationResponseClaimStatusHistoryDTO:
+      type: object
+      properties:
+        content:
+          type: array
+          description: The list of items for the current page.
+          items:
+            $ref: "#/components/schemas/ClaimStatusHistoryDTO"
+        totalElements:
+          type: integer
+          description: The total number of elements across all pages.
+          format: int64
+        totalPages:
+          type: integer
+          description: The total number of pages based on the data size and page size.
+          format: int32
+        currentPage:
+          type: integer
+          description: "The current page number, typically zero-based."
+          format: int32
+      description: Represents a paginated response containing a list of items and
+        pagination metadata.
+    FilterRequestSiuReferralDTO:
+      required:
+      - pagination
+      type: object
+      properties:
+        filters:
+          $ref: "#/components/schemas/SiuReferralDTO"
+        rangeFilters:
+          $ref: "#/components/schemas/RangeFilter"
+        pagination:
+          $ref: "#/components/schemas/PaginationRequest"
+        options:
+          $ref: "#/components/schemas/FilterOptions"
+      description: Filter criteria
+    PaginationResponseSiuReferralDTO:
+      type: object
+      properties:
+        content:
+          type: array
+          description: The list of items for the current page.
+          items:
+            $ref: "#/components/schemas/SiuReferralDTO"
+        totalElements:
+          type: integer
+          description: The total number of elements across all pages.
+          format: int64
+        totalPages:
+          type: integer
+          description: The total number of pages based on the data size and page size.
+          format: int32
+        currentPage:
+          type: integer
+          description: "The current page number, typically zero-based."
+          format: int32
+      description: Represents a paginated response containing a list of items and
+        pagination metadata.
+    FilterRequestClaimSettlementDTO:
+      required:
+      - pagination
+      type: object
+      properties:
+        filters:
+          $ref: "#/components/schemas/ClaimSettlementDTO"
+        rangeFilters:
+          $ref: "#/components/schemas/RangeFilter"
+        pagination:
+          $ref: "#/components/schemas/PaginationRequest"
+        options:
+          $ref: "#/components/schemas/FilterOptions"
+      description: Filter criteria
+    PaginationResponseClaimSettlementDTO:
+      type: object
+      properties:
+        content:
+          type: array
+          description: The list of items for the current page.
+          items:
+            $ref: "#/components/schemas/ClaimSettlementDTO"
+        totalElements:
+          type: integer
+          description: The total number of elements across all pages.
+          format: int64
+        totalPages:
+          type: integer
+          description: The total number of pages based on the data size and page size.
+          format: int32
+        currentPage:
+          type: integer
+          description: "The current page number, typically zero-based."
+          format: int32
+      description: Represents a paginated response containing a list of items and
+        pagination metadata.
+    FilterRequestClaimReserveDTO:
+      required:
+      - pagination
+      type: object
+      properties:
+        filters:
+          $ref: "#/components/schemas/ClaimReserveDTO"
+        rangeFilters:
+          $ref: "#/components/schemas/RangeFilter"
+        pagination:
+          $ref: "#/components/schemas/PaginationRequest"
+        options:
+          $ref: "#/components/schemas/FilterOptions"
+      description: Filter criteria
+    PaginationResponseClaimReserveDTO:
+      type: object
+      properties:
+        content:
+          type: array
+          description: The list of items for the current page.
+          items:
+            $ref: "#/components/schemas/ClaimReserveDTO"
+        totalElements:
+          type: integer
+          description: The total number of elements across all pages.
+          format: int64
+        totalPages:
+          type: integer
+          description: The total number of pages based on the data size and page size.
+          format: int32
+        currentPage:
+          type: integer
+          description: "The current page number, typically zero-based."
+          format: int32
+      description: Represents a paginated response containing a list of items and
+        pagination metadata.
+    FilterRequestClaimRecoveryDTO:
+      required:
+      - pagination
+      type: object
+      properties:
+        filters:
+          $ref: "#/components/schemas/ClaimRecoveryDTO"
+        rangeFilters:
+          $ref: "#/components/schemas/RangeFilter"
+        pagination:
+          $ref: "#/components/schemas/PaginationRequest"
+        options:
+          $ref: "#/components/schemas/FilterOptions"
+      description: Filter criteria
+    PaginationResponseClaimRecoveryDTO:
+      type: object
+      properties:
+        content:
+          type: array
+          description: The list of items for the current page.
+          items:
+            $ref: "#/components/schemas/ClaimRecoveryDTO"
+        totalElements:
+          type: integer
+          description: The total number of elements across all pages.
+          format: int64
+        totalPages:
+          type: integer
+          description: The total number of pages based on the data size and page size.
+          format: int32
+        currentPage:
+          type: integer
+          description: "The current page number, typically zero-based."
+          format: int32
+      description: Represents a paginated response containing a list of items and
+        pagination metadata.
+    FilterRequestClaimPartyDTO:
+      required:
+      - pagination
+      type: object
+      properties:
+        filters:
+          $ref: "#/components/schemas/ClaimPartyDTO"
+        rangeFilters:
+          $ref: "#/components/schemas/RangeFilter"
+        pagination:
+          $ref: "#/components/schemas/PaginationRequest"
+        options:
+          $ref: "#/components/schemas/FilterOptions"
+      description: Filter criteria
+    PaginationResponseClaimPartyDTO:
+      type: object
+      properties:
+        content:
+          type: array
+          description: The list of items for the current page.
+          items:
+            $ref: "#/components/schemas/ClaimPartyDTO"
+        totalElements:
+          type: integer
+          description: The total number of elements across all pages.
+          format: int64
+        totalPages:
+          type: integer
+          description: The total number of pages based on the data size and page size.
+          format: int32
+        currentPage:
+          type: integer
+          description: "The current page number, typically zero-based."
+          format: int32
+      description: Represents a paginated response containing a list of items and
+        pagination metadata.
+    FilterRequestFraudIndicatorDTO:
+      required:
+      - pagination
+      type: object
+      properties:
+        filters:
+          $ref: "#/components/schemas/FraudIndicatorDTO"
+        rangeFilters:
+          $ref: "#/components/schemas/RangeFilter"
+        pagination:
+          $ref: "#/components/schemas/PaginationRequest"
+        options:
+          $ref: "#/components/schemas/FilterOptions"
+      description: Filter criteria
+    PaginationResponseFraudIndicatorDTO:
+      type: object
+      properties:
+        content:
+          type: array
+          description: The list of items for the current page.
+          items:
+            $ref: "#/components/schemas/FraudIndicatorDTO"
+        totalElements:
+          type: integer
+          description: The total number of elements across all pages.
+          format: int64
+        totalPages:
+          type: integer
+          description: The total number of pages based on the data size and page size.
+          format: int32
+        currentPage:
+          type: integer
+          description: "The current page number, typically zero-based."
+          format: int32
+      description: Represents a paginated response containing a list of items and
+        pagination metadata.
+    FilterRequestClaimEvidenceDTO:
+      required:
+      - pagination
+      type: object
+      properties:
+        filters:
+          $ref: "#/components/schemas/ClaimEvidenceDTO"
+        rangeFilters:
+          $ref: "#/components/schemas/RangeFilter"
+        pagination:
+          $ref: "#/components/schemas/PaginationRequest"
+        options:
+          $ref: "#/components/schemas/FilterOptions"
+      description: Filter criteria
+    PaginationResponseClaimEvidenceDTO:
+      type: object
+      properties:
+        content:
+          type: array
+          description: The list of items for the current page.
+          items:
+            $ref: "#/components/schemas/ClaimEvidenceDTO"
+        totalElements:
+          type: integer
+          description: The total number of elements across all pages.
+          format: int64
+        totalPages:
+          type: integer
+          description: The total number of pages based on the data size and page size.
+          format: int32
+        currentPage:
+          type: integer
+          description: "The current page number, typically zero-based."
+          format: int32
+      description: Represents a paginated response containing a list of items and
+        pagination metadata.
+    FilterRequestClaimDenialDTO:
+      required:
+      - pagination
+      type: object
+      properties:
+        filters:
+          $ref: "#/components/schemas/ClaimDenialDTO"
+        rangeFilters:
+          $ref: "#/components/schemas/RangeFilter"
+        pagination:
+          $ref: "#/components/schemas/PaginationRequest"
+        options:
+          $ref: "#/components/schemas/FilterOptions"
+      description: Filter criteria
+    PaginationResponseClaimDenialDTO:
+      type: object
+      properties:
+        content:
+          type: array
+          description: The list of items for the current page.
+          items:
+            $ref: "#/components/schemas/ClaimDenialDTO"
+        totalElements:
+          type: integer
+          description: The total number of elements across all pages.
+          format: int64
+        totalPages:
+          type: integer
+          description: The total number of pages based on the data size and page size.
+          format: int32
+        currentPage:
+          type: integer
+          description: "The current page number, typically zero-based."
+          format: int32
+      description: Represents a paginated response containing a list of items and
+        pagination metadata.
+    FilterRequestClaimCoverageDTO:
+      required:
+      - pagination
+      type: object
+      properties:
+        filters:
+          $ref: "#/components/schemas/ClaimCoverageDTO"
+        rangeFilters:
+          $ref: "#/components/schemas/RangeFilter"
+        pagination:
+          $ref: "#/components/schemas/PaginationRequest"
+        options:
+          $ref: "#/components/schemas/FilterOptions"
+      description: Filter criteria
+    PaginationResponseClaimCoverageDTO:
+      type: object
+      properties:
+        content:
+          type: array
+          description: The list of items for the current page.
+          items:
+            $ref: "#/components/schemas/ClaimCoverageDTO"
+        totalElements:
+          type: integer
+          description: The total number of elements across all pages.
+          format: int64
+        totalPages:
+          type: integer
+          description: The total number of pages based on the data size and page size.
+          format: int32
+        currentPage:
+          type: integer
+          description: "The current page number, typically zero-based."
+          format: int32
+      description: Represents a paginated response containing a list of items and
+        pagination metadata.
+    FilterRequestCoverageCheckDTO:
+      required:
+      - pagination
+      type: object
+      properties:
+        filters:
+          $ref: "#/components/schemas/CoverageCheckDTO"
+        rangeFilters:
+          $ref: "#/components/schemas/RangeFilter"
+        pagination:
+          $ref: "#/components/schemas/PaginationRequest"
+        options:
+          $ref: "#/components/schemas/FilterOptions"
+      description: Filter criteria
+    PaginationResponseCoverageCheckDTO:
+      type: object
+      properties:
+        content:
+          type: array
+          description: The list of items for the current page.
+          items:
+            $ref: "#/components/schemas/CoverageCheckDTO"
+        totalElements:
+          type: integer
+          description: The total number of elements across all pages.
+          format: int64
+        totalPages:
+          type: integer
+          description: The total number of pages based on the data size and page size.
+          format: int32
+        currentPage:
+          type: integer
+          description: "The current page number, typically zero-based."
+          format: int32
+      description: Represents a paginated response containing a list of items and
+        pagination metadata.
+    FilterRequestClaimAssessmentDTO:
+      required:
+      - pagination
+      type: object
+      properties:
+        filters:
+          $ref: "#/components/schemas/ClaimAssessmentDTO"
+        rangeFilters:
+          $ref: "#/components/schemas/RangeFilter"
+        pagination:
+          $ref: "#/components/schemas/PaginationRequest"
+        options:
+          $ref: "#/components/schemas/FilterOptions"
+      description: Filter criteria
+    PaginationResponseClaimAssessmentDTO:
+      type: object
+      properties:
+        content:
+          type: array
+          description: The list of items for the current page.
+          items:
+            $ref: "#/components/schemas/ClaimAssessmentDTO"
+        totalElements:
+          type: integer
+          description: The total number of elements across all pages.
+          format: int64
+        totalPages:
+          type: integer
+          description: The total number of pages based on the data size and page size.
+          format: int32
+        currentPage:
+          type: integer
+          description: "The current page number, typically zero-based."
+          format: int32
+      description: Represents a paginated response containing a list of items and
+        pagination metadata.
+    FilterRequestAdjusterAssignmentDTO:
+      required:
+      - pagination
+      type: object
+      properties:
+        filters:
+          $ref: "#/components/schemas/AdjusterAssignmentDTO"
+        rangeFilters:
+          $ref: "#/components/schemas/RangeFilter"
+        pagination:
+          $ref: "#/components/schemas/PaginationRequest"
+        options:
+          $ref: "#/components/schemas/FilterOptions"
+      description: Filter criteria
+    PaginationResponseAdjusterAssignmentDTO:
+      type: object
+      properties:
+        content:
+          type: array
+          description: The list of items for the current page.
+          items:
+            $ref: "#/components/schemas/AdjusterAssignmentDTO"
+        totalElements:
+          type: integer
+          description: The total number of elements across all pages.
+          format: int64
+        totalPages:
+          type: integer
+          description: The total number of pages based on the data size and page size.
+          format: int32
+        currentPage:
+          type: integer
+          description: "The current page number, typically zero-based."
+          format: int32
+      description: Represents a paginated response containing a list of items and
+        pagination metadata.
+    FilterRequestClaimDTO:
+      required:
+      - pagination
+      type: object
+      properties:
+        filters:
+          $ref: "#/components/schemas/ClaimDTO"
+        rangeFilters:
+          $ref: "#/components/schemas/RangeFilter"
+        pagination:
+          $ref: "#/components/schemas/PaginationRequest"
+        options:
+          $ref: "#/components/schemas/FilterOptions"
+      description: Filter criteria
+    PaginationResponseClaimDTO:
+      type: object
+      properties:
+        content:
+          type: array
+          description: The list of items for the current page.
+          items:
+            $ref: "#/components/schemas/ClaimDTO"
+        totalElements:
+          type: integer
+          description: The total number of elements across all pages.
+          format: int64
+        totalPages:
+          type: integer
+          description: The total number of pages based on the data size and page size.
+          format: int32
+        currentPage:
+          type: integer
+          description: "The current page number, typically zero-based."
+          format: int32
+      description: Represents a paginated response containing a list of items and
+        pagination metadata.

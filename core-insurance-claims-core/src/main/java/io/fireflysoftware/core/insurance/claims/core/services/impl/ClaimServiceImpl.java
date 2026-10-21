@@ -24,6 +24,7 @@ import org.fireflyframework.web.error.exceptions.ResourceNotFoundException;
 import io.fireflysoftware.core.insurance.claims.core.mappers.ClaimMapper;
 import io.fireflysoftware.core.insurance.claims.core.services.ClaimService;
 import io.fireflysoftware.core.insurance.claims.interfaces.dtos.ClaimDTO;
+import io.fireflysoftware.core.insurance.claims.interfaces.enums.ClaimStatus;
 import io.fireflysoftware.core.insurance.claims.models.entities.Claim;
 import io.fireflysoftware.core.insurance.claims.models.repositories.ClaimRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,6 +53,11 @@ public class ClaimServiceImpl implements ClaimService {
     public Mono<ClaimDTO> createClaim(ClaimDTO dto) {
         return Mono.just(dto)
                 .map(mapper::toEntity)
+                .doOnNext(entity -> {
+                    if (entity.getClaimStatus() == null) {
+                        entity.setClaimStatus(ClaimStatus.NOTIFIED);
+                    }
+                })
                 .flatMap(repository::save)
                 .map(mapper::toDTO);
     }
@@ -61,8 +67,19 @@ public class ClaimServiceImpl implements ClaimService {
         return repository.findById(claimId)
                 .switchIfEmpty(Mono.error(ResourceNotFoundException.forResource("Claim", claimId.toString())))
                 .flatMap(existing -> {
+                    ClaimStatus current = existing.getClaimStatus() != null
+                            ? existing.getClaimStatus()
+                            : ClaimStatus.NOTIFIED;
                     mapper.updateEntityFromDto(dto, existing);
                     existing.setClaimId(claimId);
+                    ClaimStatus next = existing.getClaimStatus() != null
+                            ? existing.getClaimStatus()
+                            : current;
+                    if (!ClaimLifecycle.canTransition(current, next)) {
+                        return Mono.error(new IllegalStateException(
+                                "Claim " + claimId + " cannot move from " + current + " to " + next));
+                    }
+                    existing.setClaimStatus(next);
                     return repository.save(existing);
                 })
                 .map(mapper::toDTO);
@@ -72,7 +89,17 @@ public class ClaimServiceImpl implements ClaimService {
     public Mono<Void> deleteClaim(UUID claimId) {
         return repository.findById(claimId)
                 .switchIfEmpty(Mono.error(ResourceNotFoundException.forResource("Claim", claimId.toString())))
-                .flatMap(existing -> repository.deleteById(claimId));
+                .flatMap(existing -> {
+                    ClaimStatus status = existing.getClaimStatus() != null
+                            ? existing.getClaimStatus()
+                            : ClaimStatus.NOTIFIED;
+                    if (status != ClaimStatus.NOTIFIED) {
+                        return Mono.error(new IllegalStateException(
+                                "Claim " + claimId + " is " + status
+                                        + " and cannot be deleted; close it so the claim history is kept"));
+                    }
+                    return repository.deleteById(claimId);
+                });
     }
 
     @Override
